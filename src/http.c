@@ -85,17 +85,23 @@ Http_Request_Parse_Result http_request_read(char* raw_req_buffer, Http_Request* 
 
     // start parse request line
     u32 word_len =_read_word(&buf_offset);
-    strncpy(request->method, buf_offset - word_len, sizeof(request->method) - 1);
+    if (word_len >= sizeof(request->method)) word_len = sizeof(request->method) - 1;
+    strncpy(request->method, buf_offset - word_len, word_len);
+    request->method[word_len] = '\0';
 
     while (isspace(*buf_offset)) buf_offset += 1;
 
     word_len =_read_word(&buf_offset);
-    strncpy(request->path, buf_offset - word_len, sizeof(request->path) - 1);
+    if (word_len >= sizeof(request->path)) word_len = sizeof(request->path) - 1;
+    strncpy(request->path, buf_offset - word_len, word_len);
+    request->path[word_len] = '\0';
 
     while (isspace(*buf_offset)) buf_offset += 1;
 
     word_len =_read_word(&buf_offset);
-    strncpy(request->protocol, buf_offset - word_len, sizeof(request->protocol) - 1);
+    if (word_len >= sizeof(request->protocol)) word_len = sizeof(request->protocol) - 1;
+    strncpy(request->protocol, buf_offset - word_len, word_len);
+    request->protocol[word_len] = '\0';
 
     while (isspace(*buf_offset)) buf_offset += 1;
     // end parse request line

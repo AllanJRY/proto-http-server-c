@@ -8,8 +8,9 @@
 
 #include "tcp.c"
 #include "http.c"
+#include "file.c"
 
-#define SERVER_PORT 8080
+#define SERVER_PORT 3000
 
 int main(void) {
     Tcp_Server server = {0};
@@ -18,7 +19,7 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    while(true) {
+    for(;;) {
         i32 client_fd = handle_connection(server.socket_fd);
         if (client_fd == -1) {
             printf("server failed to handle client connection\n");
@@ -45,13 +46,12 @@ int main(void) {
 
         printf("request received (method=%s path=%s protocol=%s)\n", request.method, request.path, request.protocol);
 
-        Http_Response response;
+        Http_Response response = {0};
         http_response_init(&response);
-        http_response_header_add(&response, "Content-Type", "text/html");
-        http_response_header_add(&response, "Connection", "close");
 
-        response.body = "<html><body><h1>Hello, World!</h1></body></html>";
-        response.body_len = strlen((char*) response.body);
+        char sanitized_path[1024] = {0};
+        sanitize_path(request.path, sanitized_path, sizeof(sanitized_path));
+        serve_file(sanitized_path, &response);
 
         http_response_send(client_fd, &response);
 
