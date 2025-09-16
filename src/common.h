@@ -15,8 +15,8 @@ typedef double f64;
 typedef u8  bool;
 typedef u32 bool16;
 typedef u32 bool32;
-#define true  1;
-#define false 0;
+#define true  1
+#define false 0
 
 #define COMMON_H
 #endif
